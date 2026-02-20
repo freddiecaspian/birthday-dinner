@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You Are Summoned 🍷</title>
+    <meta property="og:title" content="You Are Summoned 🍷" />
+    <meta property="og:description" content="A Birthday Commandment from Freddie" />
+    <meta property="og:type" content="website" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #f5f0e8;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Flickering candle glow overlay */
+        .candle-glow {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(255, 170, 50, 0.06) 0%, transparent 70%);
+            pointer-events: none;
+            animation: flicker 3s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.6; }
+            25% { opacity: 0.9; }
+            50% { opacity: 0.7; }
+            75% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Opening scene */
+        .scene {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .scene.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scene-1 { transition-delay: 0.3s; }
+        .scene-2 { transition-delay: 0.5s; }
+        .scene-3 { transition-delay: 0.7s; }
+
+        /* The scroll / parchment header */
+        .header {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+
+        .pretitle {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 13px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: #8a7a6a;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 52px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #f5e6c8, #d4a44a, #f5e6c8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 18px;
+            color: #b8a88a;
+            margin-top: 8px;
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin: 40px 0;
+            color: #4a3f2f;
+        }
+
+        .divider-line {
+            height: 1px;
+            width: 80px;
+            background: linear-gradient(90deg, transparent, #4a3f2f, transparent);
+        }
+
+        .divider-icon { font-size: 18px; }
+
+        /* The Commandment */
+        .commandment-block {
+            background: linear-gradient(135deg, rgba(30, 25, 18, 0.9), rgba(20, 17, 12, 0.9));
+            border: 1px solid rgba(180, 150, 90, 0.15);
+            border-radius: 4px;
+            padding: 36px 32px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .commandment-block::before {
+            content: '"';
+            position: absolute;
+            top: -10px;
+            left: 16px;
+            font-family: 'Playfair Display', serif;
+            font-size: 120px;
+            color: rgba(180, 150, 90, 0.08);
+            line-height: 1;
+        }
+
+        .commandment-number {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #d4a44a;
+            margin-bottom: 16px;
+        }
+
+        .commandment-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            line-height: 1.6;
+            color: #e8dcc8;
+            font-style: italic;
+        }
+
+        /* Details card */
+        .details {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .details-label {
+            font-weight: 300;
+            font-size: 12px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: #6a5a4a;
+            margin-bottom: 6px;
+        }
+
+        .details-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #f5e6c8;
+            margin-bottom: 30px;
+        }
+
+        .details-value.big {
+            font-size: 36px;
+            background: linear-gradient(135deg, #f5e6c8, #d4a44a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* The roast section */
+        .roast-section {
+            margin: 40px 0;
+        }
+
+        .roast-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #d4a44a;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .chat-bubble {
+            background: rgba(30, 25, 18, 0.7);
+            border-left: 2px solid;
+            padding: 16px 20px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .chat-bubble.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .chat-bubble.freddie { border-color: #d4a44a; }
+        .chat-bubble.matt { border-color: #7aaddb; }
+        .chat-bubble.denise { border-color: #db7aad; }
+
+        .chat-name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .chat-bubble.freddie .chat-name { color: #d4a44a; }
+        .chat-bubble.matt .chat-name { color: #7aaddb; }
+        .chat-bubble.denise .chat-name { color: #db7aad; }
+
+        .chat-msg {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #c8baa8;
+        }
+
+        .chat-annotation {
+            font-size: 12px;
+            color: #6a5a4a;
+            font-style: italic;
+            margin-top: 6px;
+        }
+
+        /* Hamster animation */
+        .hamster-container {
+            text-align: center;
+            margin: 30px 0;
+            font-size: 48px;
+            position: relative;
+            height: 80px;
+        }
+
+        .hamster {
+            position: absolute;
+            animation: hamsterRun 4s linear infinite;
+            font-size: 40px;
+        }
+
+        @keyframes hamsterRun {
+            0% { left: -10%; transform: scaleX(1); }
+            45% { left: 95%; transform: scaleX(1); }
+            50% { left: 95%; transform: scaleX(-1); }
+            95% { left: -10%; transform: scaleX(-1); }
+            100% { left: -10%; transform: scaleX(1); }
+        }
+
+        .hamster-caption {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 14px;
+            color: #6a5a4a;
+            margin-top: 60px;
+            display: block;
+        }
+
+        /* The final summons */
+        .summons {
+            text-align: center;
+            padding: 50px 0 30px;
+        }
+
+        .summons-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            line-height: 1.6;
+            color: #e8dcc8;
+        }
+
+        .summons-text strong {
+            color: #d4a44a;
+            font-weight: 700;
+        }
+
+        .fine-print {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 11px;
+            color: #4a3f2f;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        /* Wine glass animation */
+        .wine-glasses {
+            text-align: center;
+            font-size: 32px;
+            margin: 30px 0;
+            animation: clink 2s ease-in-out infinite;
+        }
+
+        @keyframes clink {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Pulse effect on the date */
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* Staggered entrance for chat bubbles */
+        .chat-bubble:nth-child(1) { transition-delay: 0.2s; }
+        .chat-bubble:nth-child(2) { transition-delay: 0.5s; }
+        .chat-bubble:nth-child(3) { transition-delay: 0.8s; }
+        .chat-bubble:nth-child(4) { transition-delay: 1.1s; }
+        .chat-bubble:nth-child(5) { transition-delay: 1.4s; }
+        .chat-bubble:nth-child(6) { transition-delay: 1.7s; }
+
+        /* Mobile tweaks */
+        @media (max-width: 480px) {
+            .title { font-size: 38px; }
+            .details-value.big { font-size: 28px; }
+            .container { padding: 24px 16px; }
+            .commandment-block { padding: 24px 20px; }
+        }
+
+        /* Scroll fade */
+        .fade-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(transparent, #0a0a0a);
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="candle-glow"></div>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header scene scene-1">
+            <div class="pretitle">A Birthday Commandment</div>
+            <div class="title">You Are<br>Summoned</div>
+            <div class="subtitle">to the table of Freddie Chambers</div>
+        </div>
+
+        <div class="divider scene scene-2">
+            <div class="divider-line"></div>
+            <div class="divider-icon">🕯️</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- The Commandment -->
+        <div class="commandment-block scene scene-3">
+            <div class="commandment-number">The Birthday Commandment</div>
+            <div class="commandment-text">
+                Order as if you are happy to be alive. Drink, twice, before the food arrives. Eat until you feel it. Order more after that. Take your time. Order pudding and drink a digestif to help it down.
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="details scene" data-delay="1.0">
+            <div class="details-label">The Occasion</div>
+            <div class="details-value big">Freddie's Birthday Dinner</div>
+
+            <div class="details-label">The Date</div>
+            <div class="details-value pulse">Wednesday 25th February</div>
+
+            <div class="details-label">The Venue</div>
+            <div class="details-value">Chez Chambers</div>
+
+            <div class="details-label">The Dress Code</div>
+            <div class="details-value" style="font-size: 22px;">Not Amsterdam Casual<br><span style="font-size: 14px; color: #6a5a4a;">(€20/person NOT required)</span></div>
+        </div>
+
+        <div class="divider scene" data-delay="1.2">
+            <div class="divider-line"></div>
+            <div class="divider-icon">🍷</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Chat roasts -->
+        <div class="roast-section scene" data-delay="1.4">
+            <div class="roast-title">Evidence From The Group Chat</div>
+
+            <div class="chat-bubble freddie">
+                <div class="chat-name">Freddie</div>
+                <div class="chat-msg">I literally cannot</div>
+            </div>
+
+            <div class="chat-bubble freddie">
+                <div class="chat-name">Freddie</div>
+                <div class="chat-msg">I feel like the hamster</div>
+            </div>
+
+            <div class="hamster-container">
+                <div class="hamster">🐹</div>
+                <span class="hamster-caption">^ freddie during P2</span>
+            </div>
+
+            <div class="chat-bubble matt">
+                <div class="chat-name">Matt M</div>
+                <div class="chat-msg">Work sux</div>
+                <div class="chat-annotation">— the man who chose to do an MBA</div>
+            </div>
+
+            <div class="chat-bubble denise">
+                <div class="chat-name">Denise</div>
+                <div class="chat-msg">Feels like Im at work again, racing against the clock</div>
+                <div class="chat-annotation">— also chose to be here</div>
+            </div>
+
+            <div class="chat-bubble matt">
+                <div class="chat-name">Matt M</div>
+                <div class="chat-msg">Someone started early tonight</div>
+                <div class="chat-annotation">— a Wednesday. it was 9:32pm.</div>
+            </div>
+
+            <div class="chat-bubble freddie">
+                <div class="chat-name">Freddie</div>
+                <div class="chat-msg">Just walking past<br>Don't u woz</div>
+                <div class="chat-annotation">— narrator: he was not just walking past</div>
+            </div>
+        </div>
+
+        <div class="divider scene" data-delay="1.8">
+            <div class="divider-line"></div>
+            <div class="divider-icon">🕯️</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Final summons -->
+        <div class="summons scene" data-delay="2.0">
+            <div class="summons-text">
+                So come, <strong>Denise</strong> & <strong>Matt</strong>.<br><br>
+                There will be wine.<br>
+                There will be food.<br>
+                There will be no bill splitting.<br><br>
+                <em style="color: #8a7a6a; font-size: 18px;">Commandment 3 is non-negotiable.</em>
+            </div>
+
+            <div class="wine-glasses" style="margin-top: 40px;">
+                🥂
+            </div>
+
+            <div class="fine-print">
+                Do not be a miser. Do not assume through cynicism<br>
+                that this dinner is out to swindle you of your petty change.<br><br>
+                Invite to follow. This is your warning.<br><br>
+                <span style="color: #3a2f1f;">📅✅ — Denise, probably</span>
+            </div>
+        </div>
+
+        <div style="height: 60px;"></div>
+    </div>
+
+    <div class="fade-bottom"></div>
+
+    <script>
+        // Intersection Observer for scroll-triggered animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    // Also trigger chat bubbles inside
+                    const bubbles = entry.target.querySelectorAll('.chat-bubble');
+                    bubbles.forEach((bubble, i) => {
+                        setTimeout(() => bubble.classList.add('visible'), i * 300);
+                    });
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.scene').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
