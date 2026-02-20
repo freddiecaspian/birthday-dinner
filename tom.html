@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You Are Summoned 🤖</title>
+    <meta property="og:title" content="You Are Summoned 🤖" />
+    <meta property="og:description" content="A Birthday Commandment from Freddie — Now With Multi-Agent Architecture" />
+    <meta property="og:type" content="website" />
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@300;400;600&family=JetBrains+Mono:wght@300;400;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #0a0a0a;
+            color: #f5f0e8;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .candle-glow {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at 50% 30%, rgba(100, 200, 255, 0.04) 0%, transparent 70%);
+            pointer-events: none;
+            animation: flicker 3s ease-in-out infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.6; }
+            25% { opacity: 0.9; }
+            50% { opacity: 0.7; }
+            75% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .scene {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .scene.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .header {
+            text-align: center;
+            padding: 60px 0 40px;
+        }
+
+        .pretitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 300;
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: #5a8a6a;
+            margin-bottom: 20px;
+        }
+
+        .pretitle .cursor {
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .title {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #c8e6f5, #4a9ad4, #c8e6f5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 18px;
+            color: #8aabb8;
+            margin-top: 8px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin: 40px 0;
+            color: #2f3f4a;
+        }
+
+        .divider-line {
+            height: 1px;
+            width: 80px;
+            background: linear-gradient(90deg, transparent, #2f3f4a, transparent);
+        }
+
+        .divider-icon { font-size: 18px; }
+
+        /* Terminal block */
+        .terminal-block {
+            background: #111418;
+            border: 1px solid rgba(100, 200, 255, 0.1);
+            border-radius: 8px;
+            padding: 0;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            background: #1a1e24;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .terminal-dot.red { background: #ff5f57; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #28c840; }
+
+        .terminal-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #5a6a7a;
+            margin-left: 8px;
+        }
+
+        .terminal-body {
+            padding: 20px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .terminal-line {
+            opacity: 0;
+            transform: translateY(5px);
+            transition: all 0.5s ease;
+        }
+
+        .terminal-line.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .terminal-prompt { color: #5a8a6a; }
+        .terminal-cmd { color: #c8dce8; }
+        .terminal-output { color: #6a7a8a; }
+        .terminal-highlight { color: #4a9ad4; }
+        .terminal-warn { color: #d4a44a; }
+        .terminal-success { color: #4ad47a; }
+
+        /* The commandment - now in code style */
+        .commandment-block {
+            background: linear-gradient(135deg, rgba(18, 25, 30, 0.9), rgba(12, 17, 22, 0.9));
+            border: 1px solid rgba(74, 154, 212, 0.15);
+            border-radius: 4px;
+            padding: 36px 32px;
+            margin: 30px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .commandment-block::before {
+            content: '>';
+            position: absolute;
+            top: 20px;
+            left: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 80px;
+            color: rgba(74, 154, 212, 0.06);
+            line-height: 1;
+        }
+
+        .commandment-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #4a9ad4;
+            margin-bottom: 16px;
+        }
+
+        .commandment-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            line-height: 1.6;
+            color: #c8dce8;
+            font-style: italic;
+        }
+
+        /* Details */
+        .details {
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .details-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 300;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #4a5a6a;
+            margin-bottom: 6px;
+        }
+
+        .details-value {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px;
+            font-weight: 700;
+            color: #c8dce8;
+            margin-bottom: 30px;
+        }
+
+        .details-value.big {
+            font-size: 36px;
+            background: linear-gradient(135deg, #c8e6f5, #4a9ad4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Chat bubbles */
+        .roast-section { margin: 40px 0; }
+
+        .roast-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: #4a9ad4;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .chat-bubble {
+            background: rgba(18, 25, 30, 0.7);
+            border-left: 2px solid;
+            padding: 16px 20px;
+            margin: 16px 0;
+            border-radius: 0 8px 8px 0;
+            opacity: 0;
+            transform: translateX(-20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .chat-bubble.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .chat-bubble.freddie { border-color: #d4a44a; }
+        .chat-bubble.tom { border-color: #4ad4a4; }
+
+        .chat-name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .chat-bubble.freddie .chat-name { color: #d4a44a; }
+        .chat-bubble.tom .chat-name { color: #4ad4a4; }
+
+        .chat-msg {
+            font-size: 15px;
+            line-height: 1.5;
+            color: #a8b8c8;
+        }
+
+        .chat-annotation {
+            font-size: 12px;
+            color: #4a5a6a;
+            font-style: italic;
+            margin-top: 6px;
+        }
+
+        /* Progress bar animation */
+        .progress-container {
+            margin: 24px 0;
+            padding: 0 4px;
+        }
+
+        .progress-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #4a5a6a;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #1a1e24;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 3px;
+            animation: fillUp 3s ease-out forwards;
+            width: 0%;
+        }
+
+        .progress-fill.claude { background: linear-gradient(90deg, #4a9ad4, #4ad4a4); }
+        .progress-fill.tom { background: linear-gradient(90deg, #d44a4a, #d4a44a); animation-duration: 8s; }
+
+        @keyframes fillUp {
+            to { width: 100%; }
+        }
+
+        /* Token counter */
+        .token-counter {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            text-align: center;
+            color: #d44a4a;
+            margin: 20px 0;
+        }
+
+        .token-counter span {
+            animation: countUp 2s ease-out forwards;
+        }
+
+        /* Subscription badge */
+        .subscription-badge {
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            padding: 4px 12px;
+            border: 1px solid rgba(74, 212, 164, 0.3);
+            border-radius: 12px;
+            color: #4ad4a4;
+            margin: 8px 0;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 4px rgba(74, 212, 164, 0.1); }
+            to { box-shadow: 0 0 12px rgba(74, 212, 164, 0.3); }
+        }
+
+        /* Summons */
+        .summons {
+            text-align: center;
+            padding: 50px 0 30px;
+        }
+
+        .summons-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px;
+            line-height: 1.6;
+            color: #c8dce8;
+        }
+
+        .summons-text strong {
+            color: #4a9ad4;
+            font-weight: 700;
+        }
+
+        .fine-print {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 11px;
+            color: #2f3f4a;
+            line-height: 1.8;
+            font-style: italic;
+        }
+
+        .wine-glasses {
+            text-align: center;
+            font-size: 32px;
+            margin: 30px 0;
+            animation: clink 2s ease-in-out infinite;
+        }
+
+        @keyframes clink {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .chat-bubble:nth-child(1) { transition-delay: 0.2s; }
+        .chat-bubble:nth-child(2) { transition-delay: 0.5s; }
+        .chat-bubble:nth-child(3) { transition-delay: 0.8s; }
+        .chat-bubble:nth-child(4) { transition-delay: 1.1s; }
+        .chat-bubble:nth-child(5) { transition-delay: 1.4s; }
+        .chat-bubble:nth-child(6) { transition-delay: 1.7s; }
+        .chat-bubble:nth-child(7) { transition-delay: 2.0s; }
+
+        @media (max-width: 480px) {
+            .title { font-size: 36px; }
+            .details-value.big { font-size: 26px; }
+            .container { padding: 24px 16px; }
+            .commandment-block { padding: 24px 20px; }
+            .terminal-body { font-size: 11px; padding: 14px; }
+        }
+
+        .fade-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 80px;
+            background: linear-gradient(transparent, #0a0a0a);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Agent status indicators */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 24px 0;
+        }
+
+        .agent-card {
+            background: #111418;
+            border: 1px solid rgba(74, 154, 212, 0.1);
+            border-radius: 6px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .agent-emoji { font-size: 28px; margin-bottom: 6px; }
+
+        .agent-name {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            color: #4a5a6a;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .agent-status {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            margin-top: 4px;
+        }
+
+        .agent-status.active { color: #4ad4a4; }
+        .agent-status.waiting { color: #d4a44a; }
+    </style>
+</head>
+<body>
+    <div class="candle-glow"></div>
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header scene">
+            <div class="pretitle">$ claude --invoke birthday.md<span class="cursor">▊</span></div>
+            <div class="title">You Are<br>Summoned</div>
+            <div class="subtitle">multi-agent birthday architecture</div>
+        </div>
+
+        <div class="divider scene">
+            <div class="divider-line"></div>
+            <div class="divider-icon">⚡</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Terminal: The Invite -->
+        <div class="terminal-block scene">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+                <div class="terminal-title">birthday-invite — zsh — 80×24</div>
+            </div>
+            <div class="terminal-body">
+                <div class="terminal-line" style="transition-delay: 0.2s;"><span class="terminal-prompt">$</span> <span class="terminal-cmd">claude "create birthday invite for tom"</span></div>
+                <div class="terminal-line" style="transition-delay: 0.6s;"><span class="terminal-output">⠋ Spawning sub-agents...</span></div>
+                <div class="terminal-line" style="transition-delay: 1.0s;"><span class="terminal-success">✓</span> <span class="terminal-output">wine-selection-agent</span> <span class="terminal-highlight">READY</span></div>
+                <div class="terminal-line" style="transition-delay: 1.4s;"><span class="terminal-success">✓</span> <span class="terminal-output">cooking-agent</span> <span class="terminal-highlight">READY</span></div>
+                <div class="terminal-line" style="transition-delay: 1.8s;"><span class="terminal-success">✓</span> <span class="terminal-output">vibes-agent</span> <span class="terminal-highlight">READY</span></div>
+                <div class="terminal-line" style="transition-delay: 2.2s;"><span class="terminal-success">✓</span> <span class="terminal-output">pdf-extraction-agent</span> <span class="terminal-warn">FAILED (as usual)</span></div>
+                <div class="terminal-line" style="transition-delay: 2.8s;"><br><span class="terminal-highlight">Output:</span> <span class="terminal-cmd">You're invited to dinner.</span></div>
+            </div>
+        </div>
+
+        <!-- The Commandment -->
+        <div class="commandment-block scene">
+            <div class="commandment-number">System Prompt</div>
+            <div class="commandment-text">
+                Amazing how much diff a proper prompt makes. This one says: come to Freddie's birthday dinner. Bring yourself. The wine is handled. The food is handled. You just need to show up.
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="details scene">
+            <div class="details-label">The Occasion</div>
+            <div class="details-value big">Freddie's Birthday Dinner</div>
+
+            <div class="details-label">The Date</div>
+            <div class="details-value pulse">Wednesday 25th February</div>
+
+            <div class="details-label">The Venue</div>
+            <div class="details-value">Chez Chambers</div>
+
+            <div class="details-label">CINSEAD Status</div>
+            <div class="details-value" style="font-size: 22px; color: #4ad4a4;">NOT HAPPENING ✓<br><span style="font-size: 13px; color: #4a5a6a;">you're already free, we checked</span></div>
+        </div>
+
+        <!-- Agent Status Grid -->
+        <div class="scene">
+            <div class="roast-title">Agent Status: Birthday Prep</div>
+            <div class="agent-grid">
+                <div class="agent-card">
+                    <div class="agent-emoji">🍷</div>
+                    <div class="agent-name">Wine Agent</div>
+                    <div class="agent-status active">● DEPLOYED</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-emoji">👨‍🍳</div>
+                    <div class="agent-name">Food Agent</div>
+                    <div class="agent-status active">● DEPLOYED</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-emoji">🎵</div>
+                    <div class="agent-name">Vibes Agent</div>
+                    <div class="agent-status active">● DEPLOYED</div>
+                </div>
+                <div class="agent-card">
+                    <div class="agent-emoji">📄</div>
+                    <div class="agent-name">PDF Agent</div>
+                    <div class="agent-status waiting">● USAGE LIMIT HIT</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="divider scene">
+            <div class="divider-line"></div>
+            <div class="divider-icon">💬</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Chat evidence -->
+        <div class="roast-section scene">
+            <div class="roast-title">Evidence From Discovery Phase</div>
+
+            <div class="chat-bubble tom">
+                <div class="chat-name">Tom</div>
+                <div class="chat-msg">I must have wasted about 4 hrs on this today</div>
+                <div class="chat-annotation">— day 4 of having Claude</div>
+            </div>
+
+            <div class="chat-bubble tom">
+                <div class="chat-name">Tom</div>
+                <div class="chat-msg">4 days ago I didn't have Claude 😂</div>
+                <div class="chat-annotation">— and now he's on the max 20x subscription</div>
+            </div>
+
+            <div class="scene" style="text-align: center; margin: 20px 0;">
+                <div class="subscription-badge">PRO MAX 20x SUBSCRIBER 🤓</div>
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #2f3f4a; margin-top: 8px;">one of us. one of us. one of us.</div>
+            </div>
+
+            <div class="chat-bubble tom">
+                <div class="chat-name">Tom</div>
+                <div class="chat-msg">our strategy prof is complete wank</div>
+                <div class="chat-annotation">— a man of refined academic critique</div>
+            </div>
+
+            <div class="chat-bubble tom">
+                <div class="chat-name">Tom</div>
+                <div class="chat-msg">any chance i could have your beautifully enriched md notes from the good prof?</div>
+                <div class="chat-annotation">— flattery: the original prompt injection</div>
+            </div>
+
+            <div class="chat-bubble freddie">
+                <div class="chat-name">Freddie</div>
+                <div class="chat-msg">cmon<br>we can talk ai on the flight over</div>
+                <div class="chat-annotation">— freddie's idea of a holiday pitch</div>
+            </div>
+
+            <div class="chat-bubble tom">
+                <div class="chat-name">Tom</div>
+                <div class="chat-msg">My gf is putting the hard sell on me tho to go to UK</div>
+                <div class="chat-annotation">— girlfriend.exe vs sicily.md — the eternal conflict</div>
+            </div>
+
+            <div class="chat-bubble tom">
+                <div class="chat-name">Tom</div>
+                <div class="chat-msg">CINSEAD not happening next Weds so I'm around for birthday mischief 🎉</div>
+                <div class="chat-annotation">— the only valid use of a cancelled class</div>
+            </div>
+        </div>
+
+        <div class="divider scene">
+            <div class="divider-line"></div>
+            <div class="divider-icon">📊</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Tom's Claude Journey -->
+        <div class="scene">
+            <div class="roast-title">Tom's Claude Journey: A Timeline</div>
+
+            <div class="terminal-block">
+                <div class="terminal-header">
+                    <div class="terminal-dot red"></div>
+                    <div class="terminal-dot yellow"></div>
+                    <div class="terminal-dot green"></div>
+                    <div class="terminal-title">evolution.log</div>
+                </div>
+                <div class="terminal-body">
+                    <div class="terminal-line visible"><span class="terminal-output">Day 0:</span> <span class="terminal-cmd">"What's Claude?"</span></div>
+                    <div class="terminal-line visible"><span class="terminal-output">Day 1:</span> <span class="terminal-cmd">"This is quite good"</span></div>
+                    <div class="terminal-line visible"><span class="terminal-output">Day 2:</span> <span class="terminal-cmd">"I'm asking it to extract PDFs"</span></div>
+                    <div class="terminal-line visible"><span class="terminal-output">Day 3:</span> <span class="terminal-cmd">"I must have wasted 4 hrs on this"</span></div>
+                    <div class="terminal-line visible"><span class="terminal-output">Day 4:</span> <span class="terminal-cmd">"Upgraded to max 20x subscription"</span></div>
+                    <div class="terminal-line visible"><span class="terminal-output">Day 5:</span> <span class="terminal-warn">"Hitting usage limits immediately"</span></div>
+                    <div class="terminal-line visible"><span class="terminal-output">Day ?:</span> <span class="terminal-success">"Multi-agent birthday invites"</span></div>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-label">Freddie's PDF extraction</div>
+                <div class="progress-bar"><div class="progress-fill claude"></div></div>
+            </div>
+            <div class="progress-container">
+                <div class="progress-label">Tom's PDF extraction</div>
+                <div class="progress-bar"><div class="progress-fill tom"></div></div>
+            </div>
+            <div style="text-align: center; margin-top: 8px;">
+                <span style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: #4a5a6a;">one day at a time tho!</span>
+            </div>
+        </div>
+
+        <div class="divider scene">
+            <div class="divider-line"></div>
+            <div class="divider-icon">🕯️</div>
+            <div class="divider-line"></div>
+        </div>
+
+        <!-- Final summons -->
+        <div class="summons scene">
+            <div class="summons-text">
+                So come, <strong>Tom</strong>.<br><br>
+                There will be wine.<br>
+                There will be food.<br>
+                There will be absolutely<br>zero PDF extraction.<br><br>
+                <em style="color: #6a7a8a; font-size: 18px;">Just good company and a proper prompt.</em>
+            </div>
+
+            <div class="wine-glasses" style="margin-top: 40px;">
+                🥂
+            </div>
+
+            <div class="fine-print">
+                This invite was generated by a multi-agent system<br>
+                with draft-then-enrich-then-contextualise architecture.<br>
+                No strategy professors were consulted.<br><br>
+                <span style="color: #1f2f3f;">P.S. Don't tell people about this one either.</span>
+            </div>
+        </div>
+
+        <div style="height: 60px;"></div>
+    </div>
+
+    <div class="fade-bottom"></div>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const bubbles = entry.target.querySelectorAll('.chat-bubble');
+                    bubbles.forEach((bubble, i) => {
+                        setTimeout(() => bubble.classList.add('visible'), i * 300);
+                    });
+                    const lines = entry.target.querySelectorAll('.terminal-line:not(.visible)');
+                    lines.forEach((line, i) => {
+                        setTimeout(() => line.classList.add('visible'), i * 400);
+                    });
+                }
+            });
+        }, { threshold: 0.15 });
+
+        document.querySelectorAll('.scene').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
